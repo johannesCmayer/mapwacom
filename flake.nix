@@ -23,8 +23,9 @@
     in
 
     {
-      packages = forAllSystems (system:
-      {
+      # A Nixpkgs overlay.
+      overlay = final: prev: {
+
         mapwacom = with import nixpkgs { system = "x86_64-linux"; }; pkgs.writeShellApplication {
           name = "mapwacom";
 
@@ -39,7 +40,7 @@
         };
 
 
-        dmenu-mapwacom = with import nixpkgs { system = "${system}"; }; pkgs.writeShellApplication {
+        dmenu-mapwacom = with import nixpkgs { system = "x86_64-linux"; }; pkgs.writeShellApplication {
           name = "dmenu-mapwacom";
 
           runtimeInputs = with pkgs; [
@@ -56,6 +57,12 @@
           '';
         };
 
+      };
+
+      packages = forAllSystems (system:
+      {
+        inherit (nixpkgsFor.${system}) mapwacom;
+        inherit (nixpkgsFor.${system}) dmenu-mapwacom;
       });
 
       defaultPackage = forAllSystems (system: self.packages.${system}.dmenu-mapwacom);
