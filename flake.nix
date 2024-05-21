@@ -65,6 +65,19 @@
         inherit (nixpkgsFor.${system}) dmenu-mapwacom;
       });
 
+      nixosModules.hello =
+        { pkgs, ... }:
+        {
+          nixpkgs.overlays = [ self.overlay ];
+
+          environment.systemPackages = [ 
+            pkgs.mapwacom 
+            pkgs.dmenu-mapwacom 
+          ];
+
+          #systemd.services = { ... };
+        };
+
       defaultPackage = forAllSystems (system: self.packages.${system}.dmenu-mapwacom);
     };
 }
