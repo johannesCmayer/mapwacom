@@ -26,18 +26,7 @@
       # A Nixpkgs overlay.
       overlay = final: prev: {
 
-        mapwacom = with import nixpkgs { system = "x86_64-linux"; }; pkgs.writeShellApplication {
-          name = "mapwacom";
-
-          # Disable spellcheck
-          checkPhase = "";
-
-          runtimeInputs = with pkgs; [
-            xf86_input_wacom # provides xsetwacom
-          ];
-
-          text = (builtins.readFile ./mapwacom);
-        };
+        mapwacom = with import nixpkgs { system = "x86_64-linux"; }; pkgs.writeShellScriptBin "mapwacom" (builtins.readFile ./mapwacom);
 
 
         dmenu-mapwacom = with import nixpkgs { system = "x86_64-linux"; }; pkgs.writeShellApplication {

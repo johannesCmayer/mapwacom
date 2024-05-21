@@ -1,9 +1,5 @@
-#/usr/bin/env nix-shell
-# nix-shell -i bash
-# nix-shell -p bash
-
-# Author (github user nick): tom-galvin
-# taken from https://gist.github.com/tom-galvin/6c19fe907945d735c045
+# mapwacom bash script by tom-galvin
+# Taken from here https://gist.github.com/tom-galvin/6c19fe907945d735c045
 
 MAPWACOM=$(basename $0)
 
@@ -161,9 +157,7 @@ map_device_to_screen() {
 		fi
 	fi
 	read AREASX AREASY AREAX AREAY <<< `xsetwacom --get "$1" Area`
-
 	[ $SHOW_DEBUG -ne 0 ] && echo "Device '$1' area ${AREAX}x${AREAY}."
-
 	if [ "$2" = "$ENTIRE_SCREEN_NAME" ]; then
 		LINE=`xrandr -q --current | sed -n 's/^Screen 0:.*, current \([0-9]\+\) x \([0-9]\+\),.*/\1 \2/p'`
 		read WIDTH HEIGHT <<< "$LINE"
@@ -172,10 +166,8 @@ map_device_to_screen() {
 		read WIDTH HEIGHT <<< `echo "${LINE}" | sed -n 's/\([0-9]\+\)x\([0-9]\+\)+\([0-9]\+\)+\([0-9]\+\)/\1 \2/p'`
 	fi
 	[ $SHOW_DEBUG -ne 0 ] && echo "Screen '$2' size ${WIDTH}x${HEIGHT}."
-
 	RATIOAREAY=$(( AREAX * HEIGHT / WIDTH ))
 	RATIOAREAX=$(( AREAY * WIDTH / HEIGHT ))
-
 	if [ "$AREAY" -gt "$RATIOAREAY" ]; then
 		NEWAREAX="$AREAX"
 		NEWAREAY="$RATIOAREAY"
@@ -183,7 +175,6 @@ map_device_to_screen() {
 		NEWAREAX="$RATIOAREAX"
 		NEWAREAY="$AREAY"
 	fi
-
 	xsetwacom --set "$1" Area 0 0 "$NEWAREAX" "$NEWAREAY"
 	if [ "$2" = "$ENTIRE_SCREEN_NAME" ]; then
 		xsetwacom --set "$1" MapToOutput "$ENTIRE_SCREEN_NAME"
@@ -191,7 +182,6 @@ map_device_to_screen() {
 		xsetwacom --set "$1" MapToOutput "$LINE"
 	fi
 }
-
 # Maps all devices in the device list to screen $1.
 map_devices_to_screen() {
 	if valid_screen "$1"; then
@@ -204,20 +194,16 @@ map_devices_to_screen() {
 		exit $EXIT_CODE_NO_SUCH_SCREEN
 	fi
 }
-
 check_tool_exists xrandr
 check_tool_exists xsetwacom
 load_all_devices_and_screens
-
 if [ $# -eq 0 ]; then
 	usage_info
 	exit
 fi
-
 clear_devices
 SHOW_DEBUG=0
 EXIT_ON_BAD_DEVICE=0 # If we try to map a device that doesn't support it, exit script
-
 while [ $# -gt 0 ]; do
 	OPT="$1"
 	shift
